@@ -8,6 +8,7 @@ from datatools import TestData
 from datatools import Gender
 import unittest
 
+
 class RegisterNewUserTest(unittest.TestCase):
     def setUp(self):
         # Warunki wstępne
@@ -19,11 +20,10 @@ class RegisterNewUserTest(unittest.TestCase):
         # (opcjonalnie) można sprawdzić
 
     def test_password_too_short(self):
-         pass
-
-    @unittest.skip("skipping test_no_name_in_registration")
+        pass
 
 
+    @unittest.skip("skipping test_no_name_in_registration_form")
     def test_no_name_in_registration_form(self):
         # KROKI
         # 1. Klinkij "Sign in"
@@ -55,25 +55,24 @@ class RegisterNewUserTest(unittest.TestCase):
         # 7. Wpisz hasło
         self.driver.find_element(By.ID, "passwd").send_keys(TestData.VALID_PASSWORD)
         # 8. Wybierz datę urodzenia
+        # TODO: Try to select month by text "February"
         days = Select(self.driver.find_element(By.ID, "days"))
         days.select_by_value(TestData.BIRTH_DAY)
         months = Select(self.driver.find_element(By.ID, "months"))
         months.select_by_value(TestData.BIRTH_MONTH)
         years = Select(self.driver.find_element(By.ID, "years"))
         years.select_by_value(TestData.BIRTH_YEAR)
-
-        sleep(2)
         # 9. Kliknij Register
         self.driver.find_element(By.ID, "submitAccount").click()
-        sleep(5)
-        ###UWAGA TUTAJ BEDZIE TEST ###
+        ### UWAGA! TUTAJ BĘDZIE TEST! ####
         no_of_errors_message = self.driver.find_element(By.XPATH, '//div[@class="alert alert-danger"]/p[1]')
         self.assertEqual("There is 1 error", no_of_errors_message.text)
         print(no_of_errors_message.text)
-
-
-
-        sleep(2)
+        errors_list = self.driver.find_elements(By.XPATH, '//div[@class="alert alert-danger"]/ol/li')
+        print(type(errors_list))
+        self.assertEqual(1, len(errors_list))
+        self.assertEqual("firstname is required.", errors_list[0].text)
 
     def tearDown(self):
         self.driver.quit()
+
